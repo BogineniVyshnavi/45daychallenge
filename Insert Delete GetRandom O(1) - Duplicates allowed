@@ -1,0 +1,50 @@
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+#include <cstdlib> 
+using namespace std;
+
+class RandomizedCollection {
+public:
+    RandomizedCollection() {
+    }
+    
+    bool insert(int val) {
+        bool not_present = (index_map.find(val) == index_map.end() || index_map[val].empty());
+        values.push_back(val);
+        index_map[val].push_back(values.size() - 1);
+        return not_present;
+    }
+    
+    bool remove(int val) {
+        if (index_map.find(val) == index_map.end() || index_map[val].empty()) {
+            return false;
+        }
+        
+        int remove_idx = index_map[val].back();
+        index_map[val].pop_back();
+        
+        int last_val = values.back();
+        if (remove_idx < values.size() - 1) {
+            values[remove_idx] = last_val;
+            index_map[last_val].pop_back();
+            index_map[last_val].push_back(remove_idx);
+        }
+        
+        values.pop_back();
+        
+        if (index_map[val].empty()) {
+            index_map.erase(val);
+        }
+        return true;
+    }
+    
+    int getRandom() {
+        int random_index = rand() % values.size();
+        return values[random_index];
+    }
+
+private:
+    vector<int> values;
+    unordered_map<int, vector<int>> index_map;
+};
